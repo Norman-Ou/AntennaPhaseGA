@@ -27,6 +27,7 @@ def af_prephase_matrix(prephase: np.ndarray, final_phase: np.ndarray) -> np.ndar
     phase_pre_rad = np.radians(prephase_deg)
 
     # final_phase 本来就是角度，直接转为弧度
+    # final_phase = np.where(prephase == 1, 180, 0)
     phase_comp_rad = np.radians(final_phase)
 
     for i in range(SCAN_ANGLE_NUM):

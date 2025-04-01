@@ -86,9 +86,12 @@ def save_result(
     af = get_AF(prephase, final_phase)
     sll, main_lobe_gain_list, main_lobe_theta_list, \
         sidelobe_gain_list, sidelobe_theta_list = get_SLL(af)
+    
+    result = prephase.copy()
+    result = np.where(prephase == 1, 90, 0) + final_phase
 
     logger.log(
-        x, final_phase, af, sll,
+        x, result, af, sll,
         main_lobe_gain_list, main_lobe_theta_list,
         sidelobe_gain_list, sidelobe_theta_list,
         generation_count
