@@ -71,6 +71,7 @@ if __name__ == "__main__":
     ga = GeneticAlgorithm(
         fitness_func=fitness_fc,
         individual_func=individual_func,
+        valid_func=is_valid_degree_sequence,
         log_func=partial(save_result, logger=logger),
         population_size=50,
         chromosome_length=N,

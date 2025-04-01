@@ -6,7 +6,7 @@ import numpy as np
 
 # 你自己的模块
 from genetic_algorithm import GeneticAlgorithm
-from utils import get_SLL, calculate_prephase, is_valid_degree_sequence
+from utils import get_SLL, calculate_prephase
 from utils import af_prephase_matrix as get_AF
 from logger import Logger
 from constant import N
@@ -34,7 +34,7 @@ def fitness_fc(individual: List[int]) -> float:
     :return: -SLL，用于最大化适应度
     """
     # try:
-    if not is_valid_degree_sequence(individual):
+    if not valid_func(individual):
         return -9999
 
     final_phase = np.zeros((N, N), dtype=float)
@@ -73,7 +73,6 @@ def save_result(
     :param sll: 对应的 SLL（正值）
     :param logger: Logger 实例
     """
-    P = calculate_prephase(x)
     final_phase = np.zeros((N, N), dtype=float)
     # 设置四个角落区域
     corners = [(0, 0), (0, N - 2), (N - 2, 0), (N - 2, N - 2)]
@@ -89,11 +88,14 @@ def save_result(
         sidelobe_gain_list, sidelobe_theta_list = get_SLL(af)
 
     logger.log(
-        x, P, af, sll,
+        x, final_phase, af, sll,
         main_lobe_gain_list, main_lobe_theta_list,
         sidelobe_gain_list, sidelobe_theta_list,
         generation_count
     )
+
+def valid_func(seq):
+    return True
 
 if __name__ == "__main__":
     from functools import partial
@@ -102,9 +104,10 @@ if __name__ == "__main__":
     ga = GeneticAlgorithm(
         fitness_func=fitness_fc,
         individual_func=individual_func,
+        valid_func=valid_func,
         log_func=partial(save_result, logger=logger),
         population_size=50,
-        chromosome_length=N,
+        chromosome_length=4,
         generations=200,
         mutation_rate=0.05,
         crossover_rate=0.9,

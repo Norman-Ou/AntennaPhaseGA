@@ -7,6 +7,7 @@ class GeneticAlgorithm:
             self,
             fitness_func,
             individual_func,
+            valid_func,
             population_size=20,
             chromosome_length=5,
             crossover_rate=0.8,
@@ -24,31 +25,9 @@ class GeneticAlgorithm:
         self.generations = generations
         self.elitism = elitism
         self.log_func = log_func
+        self.is_valid_degree_sequence = valid_func
+
         self.population = self._initialize_population()
-
-    def is_valid_degree_sequence(self, x: List[int]) -> bool:
-        """
-        判断一个整数序列是否为合法的图的度数序列（使用 Havel–Hakimi 算法）
-        """
-        sequence = sorted(x, reverse=True)
-
-        while sequence:
-            sequence = [d for d in sequence if d > 0]
-            if not sequence:
-                return True
-
-            d = sequence.pop(0)
-            if d > len(sequence):
-                return False
-
-            for i in range(d):
-                sequence[i] -= 1
-                if sequence[i] < 0:
-                    return False
-
-            sequence.sort(reverse=True)
-
-        return True
 
     def _initialize_population(self):
         population = []
@@ -111,21 +90,20 @@ class GeneticAlgorithm:
 
     def run(self):
         pbar = tqdm(range(self.generations), desc="Running GA", dynamic_ncols=True)
-
+        # print(self.population)
+        # import pdb; pdb.set_trace()
         for gen in pbar:
             evaluated = self._evaluate_population()
-            # import pdb; pdb.set_trace()
             if not evaluated:
                 pbar.set_description(f"Gen {gen}: No valid individuals")
                 self.population = self._initialize_population()
                 continue
-
             best = max(evaluated, key=lambda x: x[1])
             best_sll = -best[1]
             best_x = best[0]
             self.log_func(x=best_x, sll=best_sll, generation_count=gen)
 
-            pbar.set_postfix(best_sll=f"{best_sll:.2f}")
+            pbar.set_postfix(best_sll=f"{best_sll:.2f}", best_result=f"{str(best_x)}")
 
             selected = self._select(evaluated)
             next_population = []
