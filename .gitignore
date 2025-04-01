@@ -1,0 +1,4 @@
+__pycache__/
+1bit_output/*
+
+!1bit_output/.gitkeep
